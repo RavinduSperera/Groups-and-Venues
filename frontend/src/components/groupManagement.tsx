@@ -97,27 +97,33 @@ const GroupManagement = () => {
       {/* Modal for Adding/Editing */}
       <Dialog open={openModal} onClose={handleCloseModal}>
         <DialogTitle>{editMode ? "Edit Group" : "Add Group"}</DialogTitle>
+        
         <DialogContent>
           <TextField label="Group Name" name="name" value={formData.name} onChange={handleChange} fullWidth margin="normal" required />
           <TextField label="Faculty/Department" name="faculty" value={formData.faculty} onChange={handleChange} fullWidth margin="normal" required />
           <TextField label="Year" name="year" type="number" value={formData.year} onChange={handleChange} fullWidth margin="normal" required />
           <TextField label="Semester" name="semester" type="number" value={formData.semester} onChange={handleChange} fullWidth margin="normal" required />
         </DialogContent>
+
         <DialogActions>
           <Button onClick={handleCloseModal} color="secondary">
             Cancel
           </Button>
+          
           <Button onClick={handleSubmit} color="primary">
             {editMode ? "Update" : "Add"}
           </Button>
         </DialogActions>
+
       </Dialog>
 
       {/* Table to display groups */}
       <Typography variant="h5" style={{ marginTop: 20 }}>
         Existing Groups
       </Typography>
+
       <Table>
+
         <TableHead>
           <TableRow>
             <TableCell>Group Name</TableCell>
@@ -127,6 +133,7 @@ const GroupManagement = () => {
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
           {groups.map((group) => (
             <TableRow key={group._id}>
@@ -145,6 +152,7 @@ const GroupManagement = () => {
             </TableRow>
           ))}
         </TableBody>
+
       </Table>
     </Container>
   );
