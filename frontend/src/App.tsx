@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/sidebar";
 import Navbar from "./components/navbar";
-import GroupManagement from "./components/groupManagement";
+import GroupManagement from "./pages/groupManagement";
 
 function App() {
   return (
