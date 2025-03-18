@@ -1,9 +1,9 @@
-import { Drawer, List, ListItemButton, ListItemText } from "@mui/material";
+import { Card, List, ListItemButton, ListItemText } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
-    <Drawer variant="permanent" sx={{ width: 240 }}>
+    <Card sx={{width: 300, mt: 1, mb: 1}}>
       <List>
         
         <ListItemButton component={Link} to="/groups">
@@ -19,7 +19,7 @@ const Sidebar = () => {
         </ListItemButton>
 
       </List>
-    </Drawer>
+    </Card>
   );
 };
 

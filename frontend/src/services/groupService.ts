@@ -25,7 +25,16 @@ export const addGroup = async(groupData: any) => {
     }
 };
 
-// update will put here later 
+// update group
+export const updateGroup = async(id: string, groupData: any) => {
+    try {
+        const response = await axios.put(`${API_URL}/${id}`, groupData);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating group: ", error);
+        throw error;
+    }
+}
 
 // delete group
 export const deleteGroup = async(id: string) => {

@@ -1,6 +1,20 @@
-import { Container, Typography, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
-import { useEffect, useState } from "react";
-import { addGroup, deleteGroup, getGroups } from "../services/groupService";
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+import { getGroups, addGroup, deleteGroup, updateGroup } from "../services/groupService";
 
 interface Group {
   _id?: string;
@@ -12,129 +26,97 @@ interface Group {
 }
 
 const GroupManagement = () => {
-
-  const [group, setGroups] = useState<Group[]>([]);
-  const [formData, setFromData] = useState<Group>({
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [formData, setFormData] = useState<Group>({
     name: "",
     faculty: "",
     year: 0,
     semester: 0,
-    maxStudents: 60
+    maxStudents: 60,
   });
+  const [editMode, setEditMode] = useState(false);
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [openModal, setOpenModal] = useState(false);
 
-  // fetch groups wgen the compoent loads
   useEffect(() => {
     fetchGroups();
   }, []);
 
-  // implementing fetch group function 
-  const fetchGroups = async() => {
+  const fetchGroups = async () => {
     const data = await getGroups();
     setGroups(data);
   };
 
-  // inplut change handler
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFromData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // submission handler
-  const handleSubmit = async(e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await addGroup(formData);
-    fetchGroups(); // this will refresh the list 
-    setFromData({
-      name: "",
-      faculty: "",
-      year: 0,
-      semester: 0,
-      maxStudents: 60
-    }); // reset the form
+    if (editMode && editingGroupId) {
+      await updateGroup(editingGroupId, formData);
+    } else {
+      await addGroup(formData);
+    }
+    fetchGroups();
+    handleCloseModal();
   };
 
-  // delete handler
-  const handleDelete = async(id?: string) => {
-    if(id) {
+  const handleEdit = (group: Group) => {
+    setFormData(group);
+    setEditingGroupId(group._id || null);
+    setEditMode(true);
+    setOpenModal(true);
+  };
+
+  const handleDelete = async (id?: string) => {
+    if (id) {
       await deleteGroup(id);
-      fetchGroups(); // this will refresh the list 
+      fetchGroups();
     }
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setEditMode(false);
+    setEditingGroupId(null);
+    setFormData({ name: "", faculty: "", year: 0, semester: 0, maxStudents: 60 });
   };
 
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        Add Groups
+        Group Management
       </Typography>
 
-      {/* Form to add group */}
-      <form onSubmit={handleSubmit}>
-        <TextField 
-          label="Group Name" 
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          variant="outlined" 
-          fullWidth 
-          margin="normal"
-          required
-         />
-        <TextField 
-          label="Faculty/Department"
-          name="faculty"
-          value={formData.faculty}
-          onChange={handleChange}
-          variant="outlined" 
-          fullWidth 
-          margin="normal"
-          required
-        />
-        <TextField 
-          label="Year" 
-          name="year"
-          type="number"
-          value={formData.year}
-          onChange={handleChange} 
-          variant="outlined" 
-          fullWidth 
-          margin="normal"
-          required
-        />
-        <TextField 
-          label="Semester"
-          name="semester"
-          type="number" 
-          value={formData.semester}
-          onChange={handleChange}
-          variant="outlined" 
-          fullWidth 
-          margin="normal" 
-          required
-        />
+      {/* Button to open modal for adding a new group */}
+      <Button variant="contained" color="primary" onClick={() => setOpenModal(true)}>
+        Add Group
+      </Button>
 
-        {/* need to be modify this not should be a textfield */}
-        <TextField 
-          label="Max Students (60)" 
-          type="number" 
-          variant="outlined" 
-          fullWidth 
-          margin="normal" 
-        />
+      {/* Modal for Adding/Editing */}
+      <Dialog open={openModal} onClose={handleCloseModal}>
+        <DialogTitle>{editMode ? "Edit Group" : "Add Group"}</DialogTitle>
+        <DialogContent>
+          <TextField label="Group Name" name="name" value={formData.name} onChange={handleChange} fullWidth margin="normal" required />
+          <TextField label="Faculty/Department" name="faculty" value={formData.faculty} onChange={handleChange} fullWidth margin="normal" required />
+          <TextField label="Year" name="year" type="number" value={formData.year} onChange={handleChange} fullWidth margin="normal" required />
+          <TextField label="Semester" name="semester" type="number" value={formData.semester} onChange={handleChange} fullWidth margin="normal" required />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            {editMode ? "Update" : "Add"}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
-        <Button
-          type="submit"
-          variant="contained" 
-          color="primary" 
-          fullWidth
-        >
-          Add Group
-        </Button>
-      </form>
-      
       {/* Table to display groups */}
       <Typography variant="h5" style={{ marginTop: 20 }}>
         Existing Groups
       </Typography>
-      
       <Table>
         <TableHead>
           <TableRow>
@@ -145,17 +127,20 @@ const GroupManagement = () => {
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
-        
         <TableBody>
-          {group.map((grp) => (
-            <TableRow key={grp._id}>
-              <TableCell>{grp.name}</TableCell>
-              <TableCell>{grp.faculty}</TableCell>
-              <TableCell>{grp.year}</TableCell>
-              <TableCell>{grp.semester}</TableCell>
+          {groups.map((group) => (
+            <TableRow key={group._id}>
+              <TableCell>{group.name}</TableCell>
+              <TableCell>{group.faculty}</TableCell>
+              <TableCell>{group.year}</TableCell>
+              <TableCell>{group.semester}</TableCell>
               <TableCell>
-                <Button color="secondary">Edit</Button>
-                <Button color="error" onClick={() => handleDelete(grp._id)}>Delete</Button>
+                <Button color="primary" onClick={() => handleEdit(group)}>
+                  Edit
+                </Button>
+                <Button color="error" onClick={() => handleDelete(group._id)}>
+                  Delete
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -166,5 +151,3 @@ const GroupManagement = () => {
 };
 
 export default GroupManagement;
-
-// run timr error - not adding groups into the table 
