@@ -14,15 +14,30 @@ export default function VenueManagement() {
   }, []);
 
   const handleAddOrUpdate = (venue: any) => {
+    const duplicateHall = venues.find(v => v.hall.toLowerCase() === venue.hall.toLowerCase());
+  
+    if (duplicateHall) {
+      alert("A hall with this name already exists! Please use a different name.");
+      return;
+    }
+  
+    if (venue.type === "lab") {
+      const overlappingLab = venues.find(v => v.type === "lab" && v.hall === venue.hall);
+      if (overlappingLab) {
+        alert("Lab sessions cannot overlap! Please choose another hall.");
+        return;
+      }
+    }
+  
     if (editingVenue) {
-      // Update existing venue
       setVenues(venues.map((v) => (v.id === venue.id ? venue : v)));
       setEditingVenue(null);
     } else {
-      // Add new venue
       setVenues([...venues, { ...venue, id: Date.now().toString() }]);
     }
   };
+  
+  
 
   const handleEdit = (venue: any) => {
     setEditingVenue(venue);
