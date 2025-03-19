@@ -1,11 +1,16 @@
-import { Button } from "@/components/ui/button"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import GroupReport from "@/components/reports/GroupReport";
+import VenueReport from "@/components/reports/VenueReport";
 
-function App() {
+const App = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
-    </div>
-  )
-}
+    <Router>
+      <Routes>
+        <Route path="/reports/groups" element={<GroupReport />} />
+        <Route path="/reports/venues" element={<VenueReport />} />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App
+export default App;
