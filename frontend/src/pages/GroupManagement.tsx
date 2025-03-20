@@ -51,10 +51,10 @@ export default function GroupManagement() {
   };
 
   return (
-    <div className="p-4 space-y-6">
-      <Card>
+    <div className="p-4 space-y-6 justify-center align-middle">
+      <Card className="w-174">
         <CardContent>
-          <h2 className="text-xl font-semibold">Manage Groups</h2>
+          <h2 className="text-xl font-bold mb-5">Add Groups</h2>
           <GroupForm onSubmit={handleAddOrUpdate} initialData={editingGroup} />
         </CardContent>
       </Card>

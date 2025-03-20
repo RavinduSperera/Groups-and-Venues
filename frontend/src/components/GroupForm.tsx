@@ -29,8 +29,8 @@ export default function GroupForm({ onSubmit, initialData }: GroupFormProps) {
   });
 
   return (
-    <Card className="w-full p-4">
-      <CardContent className="space-y-4">
+    <Card className="w-160 p-6">
+      <CardContent className="space-y-4 flex flex-col">
         {/* Group Name */}
         <Label>Group Name</Label>
         <Input {...register("groupName", { required: "Group name is required" })} placeholder="Enter group name" />
@@ -41,36 +41,39 @@ export default function GroupForm({ onSubmit, initialData }: GroupFormProps) {
         <Input {...register("faculty", { required: "Faculty is required" })} placeholder="Enter faculty/department" />
         {errors.faculty && <p className="text-red-500 text-sm">{String(errors.faculty.message)}</p>}
 
+        <div className="flex flex-row items-center gap-4">
+            <Label>Year</Label>
+            <Input type="number" {...register("year", { 
+              required: "Year is required", 
+              min: { value: 1, message: "Year must be at least 1" }, 
+              max: { value: 4, message: "Year cannot be more than 4" } 
+            })} placeholder="Year (1-4)"  className="w-30"/>
+            {errors.year && <p className="text-red-500 text-sm">{String(errors.year.message)}</p>}
+
+            {/* Semester */}
+            <Label>Semester</Label>
+            <Select onValueChange={(value) => setValue("semester", value)} value={watch("semester")}>
+              <SelectTrigger><SelectValue placeholder="Semester" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="2">2</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.semester && <p className="text-red-500 text-sm">Semester is required</p>}
+
+            {/* Group Type */}
+            <Label>Type</Label>
+            <Select onValueChange={(value) => setValue("type", value)} value={watch("type")}>
+              <SelectTrigger><SelectValue placeholder="Group Type" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Weekday">Weekday</SelectItem>
+                <SelectItem value="Weekend">Weekend</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.type && <p className="text-red-500 text-sm">Group type is required</p>}
+        </div>
         {/* Year */}
-        <Label>Year</Label>
-        <Input type="number" {...register("year", { 
-          required: "Year is required", 
-          min: { value: 1, message: "Year must be at least 1" }, 
-          max: { value: 4, message: "Year cannot be more than 4" } 
-        })} placeholder="Enter year (1-4)" />
-        {errors.year && <p className="text-red-500 text-sm">{String(errors.year.message)}</p>}
-
-        {/* Semester */}
-        <Label>Semester</Label>
-        <Select onValueChange={(value) => setValue("semester", value)} value={watch("semester")}>
-          <SelectTrigger><SelectValue placeholder="Select Semester" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1">1</SelectItem>
-            <SelectItem value="2">2</SelectItem>
-          </SelectContent>
-        </Select>
-        {errors.semester && <p className="text-red-500 text-sm">Semester is required</p>}
-
-        {/* Group Type */}
-        <Label>Group Type</Label>
-        <Select onValueChange={(value) => setValue("type", value)} value={watch("type")}>
-          <SelectTrigger><SelectValue placeholder="Select Group Type" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Weekday">Weekday</SelectItem>
-            <SelectItem value="Weekend">Weekend</SelectItem>
-          </SelectContent>
-        </Select>
-        {errors.type && <p className="text-red-500 text-sm">Group type is required</p>}
+        
 
         {/* Registered Students */}
         <Label>Number of Registered Students</Label>
